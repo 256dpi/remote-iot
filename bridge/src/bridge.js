@@ -5,6 +5,7 @@ const uartUUID = '6e400001b5a3f393e0a9e50e24dcca9e';
 const txUUID = '6e400002b5a3f393e0a9e50e24dcca9e';
 const rxUUID = '6e400003b5a3f393e0a9e50e24dcca9e';
 
+let scanning = false;
 const devices = {};
 
 module.exports.start = function (uri, clientID = 'Remotiot', logger = console.log) {
@@ -50,9 +51,11 @@ module.exports.start = function (uri, clientID = 'Remotiot', logger = console.lo
     if (state === 'poweredOn') {
       logger('==> Started scanning...');
       await noble.startScanningAsync([], true);
+      scanning = true;
     } else {
       logger('==> Stopped scanning...');
       await noble.stopScanningAsync();
+      scanning = false;
     }
   });
 
@@ -184,7 +187,9 @@ module.exports.stop = async function () {
   console.log("==> Stopping...");
 
   // stop scanning
-  await noble.stopScanningAsync();
+  if (scanning) {
+    await noble.stopScanningAsync();
+  }
 
   // disconnect connections
   for (const device of Object.values(devices)) {
