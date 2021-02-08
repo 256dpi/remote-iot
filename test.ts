@@ -7,6 +7,9 @@ input.onButtonPressed(Button.A, function () {
 input.onGesture(Gesture.TiltLeft, function () {
     remotiot.send("lisa", "bang!")
 })
+input.onGesture(Gesture.TiltRight, function () {
+    remotiot.start("peter");
+})
 remotiot.onOffline(function () {
     basic.setLedColor(0xff0000)
 })

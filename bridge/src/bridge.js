@@ -79,7 +79,6 @@ module.exports.start = async function (uri, clientID = 'Remotiot', logger = cons
     }
   });
 
-
   // handle discovered devices
   discoverHandler = async function (peripheral) {
     // get name
@@ -154,16 +153,18 @@ module.exports.start = async function (uri, clientID = 'Remotiot', logger = cons
     device.txChar = txChar;
     device.rxChar = rxChar;
 
-    // subscribe messages
-    await txChar.subscribeAsync();
-
     // handle messages
     txChar.on('data', (data) => {
       // get message
       const msg = data.toString().trim();
 
+      // check message
+      if (msg.length === 0) {
+        return;
+      }
+
       // check config
-      if (msg.startsWith('$config:')) {
+      if (msg.startsWith('$config;')) {
         // get filter
         device.filter = msg.slice(8);
 
@@ -185,6 +186,12 @@ module.exports.start = async function (uri, clientID = 'Remotiot', logger = cons
       // publish message
       client.publish(segments[1], msg);
     });
+
+    // subscribe messages
+    await txChar.subscribeAsync();
+
+    // write ready
+    await rxChar.writeAsync(Buffer.from('$ready;;\n', 'utf8'), true);
 
     // log
     logger('==> Device connected: ' + name);
