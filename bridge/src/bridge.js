@@ -5,17 +5,14 @@ const uartUUID = '6e400001b5a3f393e0a9e50e24dcca9e';
 const txUUID = '6e400002b5a3f393e0a9e50e24dcca9e';
 const rxUUID = '6e400003b5a3f393e0a9e50e24dcca9e';
 
-let scanning = false;
 let discoverHandler;
 
 // handle state changes
 noble.on('stateChange', async function (state) {
   if (state === 'poweredOn') {
     await noble.startScanningAsync([], true);
-    scanning = true;
   } else {
     await noble.stopScanningAsync();
-    scanning = false;
   }
 });
 
