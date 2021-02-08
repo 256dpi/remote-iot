@@ -1,0 +1,38 @@
+{
+  "name": "bridge",
+  "productName": "RemotIoT Bridge",
+  "version": "0.1.0",
+  "private": true,
+  "description": "The RemotIoT Bridge",
+  "main": "src/main.js",
+  "scripts": {
+    "cli": "node cli.js",
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "fmt": "prettier --single-quote --print-width 120 --write './*.js' './src/**/*.js'"
+  },
+  "keywords": [],
+  "license": "MIT",
+  "author": {
+    "name": "Joël Gähwiler",
+    "email": "joel.gaehwiler@gmail.com"
+  },
+  "config": {
+    "forge": "./forge.js"
+  },
+  "dependencies": {
+    "@abandonware/noble": "^1.9.2-11",
+    "mqtt": "^4.2.6"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "6.0.0-beta.54",
+    "@electron-forge/maker-deb": "6.0.0-beta.54",
+    "@electron-forge/maker-dmg": "6.0.0-beta.54",
+    "@electron-forge/maker-rpm": "6.0.0-beta.54",
+    "@electron-forge/maker-squirrel": "6.0.0-beta.54",
+    "@electron-forge/maker-zip": "6.0.0-beta.54",
+    "electron": "^10.3.1",
+    "prettier": "^2.1.2"
+  }
+}
