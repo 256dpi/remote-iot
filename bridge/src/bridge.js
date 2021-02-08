@@ -147,7 +147,7 @@ module.exports.start = function (uri, clientID = 'Remotiot', logger = console.lo
         device.filter = msg.slice(8);
 
         // log
-        logger('==> Got filter: ' + device.filter);
+        logger('==> Got config: ' + device.filter);
 
         return;
       }
