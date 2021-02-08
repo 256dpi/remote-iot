@@ -15,8 +15,8 @@ async function createWindow() {
     width: 1000,
     height: 800,
     webPreferences: {
-      preload: path.join(app.getAppPath(), 'src', 'preload.js')
-    }
+      preload: path.join(app.getAppPath(), 'src', 'preload.js'),
+    },
   });
 
   mainWindow.on('closed', function () {

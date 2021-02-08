@@ -8,30 +8,30 @@ const rxUUID = '6e400003b5a3f393e0a9e50e24dcca9e';
 const connections = {};
 const devices = {};
 
-module.exports.start = function(uri, clientID = 'Remotiot', logger = console.log) {
+module.exports.start = function (uri, clientID = 'Remotiot', logger = console.log) {
   const client = mqtt.connect(uri, {
-    clientId: clientID
+    clientId: clientID,
   });
 
   client.on('connect', () => {
-    logger("==> MQTT connected!");
+    logger('==> MQTT connected!');
   });
 
   client.on('error', (err) => {
-    logger("==> MQTT error: " + err.toString());
+    logger('==> MQTT error: ' + err.toString());
   });
 
   client.subscribe('#');
 
   client.on('message', (topic, data) => {
     // get message
-    const msg = data.toString()
+    const msg = data.toString();
 
     // log
-    logger("==> Incoming message: " + msg)
+    logger('==> Incoming message: ' + msg);
 
     // make buffer
-    const buf = Buffer.from(msg + "\n", 'utf8');
+    const buf = Buffer.from(msg + '\n', 'utf8');
 
     // relay message
     for (const device of Object.values(devices)) {
@@ -72,7 +72,7 @@ module.exports.start = function(uri, clientID = 'Remotiot', logger = console.log
     let connected = false;
     const disconnect = async () => {
       if (connected) {
-        await peripheral.disconnectAsync()
+        await peripheral.disconnectAsync();
       }
 
       // delete connection
@@ -80,10 +80,10 @@ module.exports.start = function(uri, clientID = 'Remotiot', logger = console.log
 
       // delete device
       delete devices[peripheral.id];
-    }
+    };
 
     // log
-    logger("==> Device found: " + name);
+    logger('==> Device found: ' + name);
 
     // connect
     await peripheral.connectAsync();
@@ -92,19 +92,19 @@ module.exports.start = function(uri, clientID = 'Remotiot', logger = console.log
     await peripheral.discoverAllServicesAndCharacteristicsAsync();
 
     // find UART service
-    const uartService = peripheral.services.find(svc => svc.uuid === uartUUID);
+    const uartService = peripheral.services.find((svc) => svc.uuid === uartUUID);
     if (!uartService) {
-      logger("==> UART service not found: " + name);
-      await disconnect()
+      logger('==> UART service not found: ' + name);
+      await disconnect();
       return;
     }
 
     // find characteristics
-    const txChar = uartService.characteristics.find(chr => chr.uuid === txUUID);
-    const rxChar = uartService.characteristics.find(chr => chr.uuid === rxUUID);
+    const txChar = uartService.characteristics.find((chr) => chr.uuid === txUUID);
+    const rxChar = uartService.characteristics.find((chr) => chr.uuid === rxUUID);
     if (!txChar || !rxChar) {
-      logger("==> UART characteristics not found: " + name);
-      await disconnect()
+      logger('==> UART characteristics not found: ' + name);
+      await disconnect();
       return;
     }
 
@@ -117,8 +117,8 @@ module.exports.start = function(uri, clientID = 'Remotiot', logger = console.log
       peripheral: peripheral,
       txChar: txChar,
       rxChar: rxChar,
-      filter: ''
-    }
+      filter: '',
+    };
 
     // handle messages
     txChar.on('data', (data) => {
@@ -137,10 +137,10 @@ module.exports.start = function(uri, clientID = 'Remotiot', logger = console.log
       }
 
       // log
-      logger('==> Outgoing message: ' +  msg);
+      logger('==> Outgoing message: ' + msg);
 
       // parse message
-      const segments = msg.split(';')
+      const segments = msg.split(';');
       if (segments.length !== 3) {
         return;
       }
@@ -150,7 +150,7 @@ module.exports.start = function(uri, clientID = 'Remotiot', logger = console.log
     });
 
     // log
-    logger("==> Device connected: " + name);
+    logger('==> Device connected: ' + name);
 
     // store device
     devices[peripheral.id] = device;
@@ -158,20 +158,20 @@ module.exports.start = function(uri, clientID = 'Remotiot', logger = console.log
     // handle disconnect
     peripheral.once('disconnect', async () => {
       // disconnect
-      await disconnect()
+      await disconnect();
 
       // log
-      logger("==> Device disconnected: " + name);
+      logger('==> Device disconnected: ' + name);
     });
   });
-}
+};
 
 module.exports.stop = async function () {
   // stop scanning
-  await noble.stopScanningAsync()
+  await noble.stopScanningAsync();
 
   // disconnect connections
-  for(const peripheral of Object.values(connections)) {
+  for (const peripheral of Object.values(connections)) {
     await peripheral.disconnectAsync();
   }
-}
+};
