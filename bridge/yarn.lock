@@ -624,12 +624,6 @@ brace-expansion@^1.1.7:
     balanced-match "^1.0.0"
     concat-map "0.0.1"
 
-"bridge-cli@file:../bridge-cli":
-  version "1.0.0"
-  dependencies:
-    "@abandonware/noble" "^1.9.2-11"
-    mqtt "^4.2.6"
-
 buffer-alloc-unsafe@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/buffer-alloc-unsafe/-/buffer-alloc-unsafe-1.1.0.tgz#bd7dc26ae2972d0eda253be061dba992349c19f0"

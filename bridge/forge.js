@@ -5,10 +5,10 @@ const pkg = require('./package.json');
 const config = {
   packagerConfig: {
     asar: false, // required to access CLI
-    appBundleId: 'com.256dpi.remotiot-bridge',
+    appBundleId: 'com.256dpi.remotiot',
     appCategoryType: 'public.app-category.developer-tools',
     appCopyright: `Copyright © ${new Date().getFullYear()} Joël Gähwiler. All rights reserved.`,
-    executableName: 'remotiot-bridge',
+    executableName: 'remotiot',
     ignore: [/\.gitignore/, /\.node-version/, /cli\.js/, /forge\.js/, /yarn\.lock/],
   },
   makers: [
@@ -24,8 +24,8 @@ const config = {
       name: '@electron-forge/maker-squirrel',
       platforms: ['win32'],
       config: {
-        name: 'remotiot-bridge',
-        exe: 'remotiot-bridge.exe',
+        name: 'remotiot',
+        exe: 'remotiot.exe',
       },
     },
     {
@@ -33,8 +33,8 @@ const config = {
       platforms: ['linux'],
       config: {
         options: {
-          name: 'remotiot-bridge',
-          bin: 'remotiot-bridge',
+          name: 'remotiot',
+          bin: 'remotiot',
         },
       },
     },
@@ -43,8 +43,8 @@ const config = {
       platforms: ['linux'],
       config: {
         options: {
-          name: 'remotiot-bridge',
-          bin: 'remotiot-bridge',
+          name: 'remotiot',
+          bin: 'remotiot',
         },
       },
     },
@@ -55,12 +55,12 @@ const config = {
 
       // prepare rules
       const rules = [
-        { test: /.*\.zip/, name: `remotiot-bridge-${pkg.version}-${process.platform}.zip` },
-        { test: /.*\.dmg/, name: `remotiot-bridge-${pkg.version}.dmg` },
-        { test: /.*\.exe/, name: `remotiot-bridge-${pkg.version}.exe` },
-        { test: /.*\.deb/, name: `remotiot-bridge-${pkg.version}.deb` },
-        { test: /.*\.rpm/, name: `remotiot-bridge-${pkg.version}.rpm` },
-        { test: /.*-full\.nupkg/, name: `remotiot-bridge-${pkg.version}-full.nupkg` },
+        { test: /.*\.zip/, name: `remotiot-${pkg.version}-${process.platform}.zip` },
+        { test: /.*\.dmg/, name: `remotiot-${pkg.version}.dmg` },
+        { test: /.*\.exe/, name: `remotiot-${pkg.version}.exe` },
+        { test: /.*\.deb/, name: `remotiot-${pkg.version}.deb` },
+        { test: /.*\.rpm/, name: `remotiot-${pkg.version}.rpm` },
+        { test: /.*-full\.nupkg/, name: `remotiot-${pkg.version}-full.nupkg` },
       ];
 
       // rename files

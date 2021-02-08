@@ -1,6 +1,6 @@
 {
   "name": "bridge",
-  "productName": "RemotIoT Bridge",
+  "productName": "RemotIoT",
   "version": "0.1.0",
   "private": true,
   "description": "The RemotIoT Bridge",
