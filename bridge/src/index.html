@@ -1,21 +1,58 @@
 <html>
 <head>
     <title>Remotiot Bridge</title>
+    <style>
+        body {
+            margin: 20px;
+            background: #eee;
+            font-family: sans-serif;
+            font-size: 16px;
+        }
+
+        #toolbar {
+            display: flex;
+            margin-bottom: 10px;
+            justify-content: space-between;
+        }
+
+        input {
+            width: 90%;
+            box-sizing: border-box;
+            padding: 5px 10px;
+            margin-right: 10px;
+            font-family: monospace;
+            font-size: 16px;
+        }
+
+        button {
+            width: 10%;
+            box-sizing: border-box;
+            padding: 5px 10px;
+            font-size: 16px;
+        }
+
+        textarea {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 16px;
+        }
+    </style>
 </head>
 <body>
     <h1>Remotiot Bridge</h1>
 
-    <p>
-        <input id="broker" type="text" placeholder="Broker URI">
+    <div id="toolbar">
+        <input id="broker" type="text" placeholder="mqtt://name:secret@name.cloud.shiftr.io">
 
         <button id="start" type="button">
             Start
         </button>
-    </p>
+    </div>
 
-    <p>
-        <textarea cols="80" rows="40" id="log"></textarea>
-    </p>
+    <textarea cols="80" rows="40" id="log" disabled></textarea>
 
     <script src="index.js"></script>
 </body>

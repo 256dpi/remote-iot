@@ -9,8 +9,9 @@ startButton.onclick = async function () {
     broker: brokerInput.textContent,
   });
 
-  // disable button
-  startButton.attributes['disabled'] = true;
+  // disable input and button
+  brokerInput.disabled = true;
+  startButton.disabled = true;
 };
 
 window.ipcRendrer.on('log', (_, msg) => {
