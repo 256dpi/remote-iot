@@ -1,17 +1,25 @@
 {
     "name": "Remotiot",
-    "description": "",
+    "version": "0.1.0",
+    "description": "Remote IoT at Home",
+    "license": "MIT",
     "dependencies": {
         "core": "*",
         "bluetooth": "*"
     },
     "files": [
-        "main.blocks",
-        "main.ts",
         "README.md",
         "remotiot.ts"
     ],
-    "preferredEditor": "blocksprj",
+    "testFiles": [
+        "test.ts"
+    ],
+    "public": true,
+    "supportedTargets": [
+        "microbit",
+        "calliope"
+    ],
+    "preferredEditor": "tsprj",
     "yotta": {
         "config": {
             "microbit-dal": {
@@ -26,9 +34,7 @@
                     "eddystone_uid": 0,
                     "partial_flashing": 0
                 },
-                "gatt_table_size": "0x300",
-                "debug": 1,
-                "heap_debug": 1
+                "gatt_table_size": "0x300"
             }
         }
     }
