@@ -1,7 +1,6 @@
+const fs = require('fs');
 const path = require('path');
-
-// icon generation:
-//  npx electron-icon-maker --input icon.png --output .
+const pkg = require('./package.json');
 
 const config = {
   packagerConfig: {
@@ -10,8 +9,7 @@ const config = {
     appCategoryType: 'public.app-category.developer-tools',
     appCopyright: `Copyright © ${new Date().getFullYear()} Joël Gähwiler. All rights reserved.`,
     executableName: 'remotiot-bridge',
-    icon: path.resolve(__dirname, 'assets', 'icon'), // .icns or .ico is added depending on platform
-    ignore: [/\.gitignore/, /forge\.js/, /README\.md/, /yarn\.lock/],
+    ignore: [/\.gitignore/, /\.node-version/, /cli\.js/, /forge\.js/, /yarn\.lock/],
   },
   makers: [
     {
@@ -20,20 +18,14 @@ const config = {
     },
     {
       name: '@electron-forge/maker-dmg',
-      platforms: ['darwin'],
-      config: {
-        icon: path.resolve(__dirname, 'assets', 'icon.icns'),
-        background: path.resolve(__dirname, 'assets', 'dmg.png'), // also uses dmg@2x.png
-      },
+      platforms: ['darwin']
     },
     {
       name: '@electron-forge/maker-squirrel',
       platforms: ['win32'],
       config: {
-        name: 'shiftr-io-desktop',
-        exe: 'shiftr-io-desktop.exe',
-        iconUrl: 'https://www.shiftr.io/favicon.ico',
-        setupIcon: path.resolve(__dirname, 'assets', 'icon.ico'),
+        name: 'remotiot-bridge',
+        exe: 'remotiot-bridge.exe',
       },
     },
     {
@@ -41,9 +33,8 @@ const config = {
       platforms: ['linux'],
       config: {
         options: {
-          name: 'shiftr-io-desktop',
-          bin: 'shiftr-io-desktop',
-          icon: path.resolve(__dirname, 'assets', 'icon.png'),
+          name: 'remotiot-bridge',
+          bin: 'remotiot-bridge',
         },
       },
     },
@@ -52,13 +43,38 @@ const config = {
       platforms: ['linux'],
       config: {
         options: {
-          name: 'shiftr-io-desktop',
-          bin: 'shiftr-io-desktop',
-          icon: path.resolve(__dirname, 'assets', 'icon.png'),
+          name: 'remotiot-bridge',
+          bin: 'remotiot-bridge',
         },
       },
     },
   ],
+  hooks: {
+    postMake: async (_, results) => {
+      /* consistently name artifacts */
+
+      // prepare rules
+      const rules = [
+        { test: /.*\.zip/, name: `remotiot-bridge-${pkg.version}-${process.platform}.zip` },
+        { test: /.*\.dmg/, name: `remotiot-bridge-${pkg.version}.dmg` },
+        { test: /.*\.exe/, name: `remotiot-bridge-${pkg.version}.exe` },
+        { test: /.*\.deb/, name: `remotiot-bridge-${pkg.version}.deb` },
+        { test: /.*\.rpm/, name: `remotiot-bridge-${pkg.version}.rpm` },
+        { test: /.*-full\.nupkg/, name: `remotiot-bridge-${pkg.version}-full.nupkg` },
+      ];
+
+      // rename files
+      results.forEach((result) => {
+        result.artifacts.forEach((artifact) => {
+          rules.forEach((rule) => {
+            if (artifact.match(rule.test)) {
+              fs.renameSync(artifact, path.join(path.dirname(artifact), rule.name));
+            }
+          });
+        });
+      });
+    },
+  },
 };
 
 module.exports = config;
