@@ -58,7 +58,7 @@ function logger(msg) {
 
 ipcMain.on('start', (_, opts) => {
   // get broker
-  const broker = opts.broker || 'mqtt://garage:testtest@garage.cloud.shiftr.io';
+  const broker = opts.broker || 'mqtt://remotiot:remotiot@remotiot.cloud.shiftr.io';
 
   // run bridge
   start(broker, 'Remotiot', logger);
