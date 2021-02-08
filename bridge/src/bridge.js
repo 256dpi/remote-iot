@@ -27,7 +27,7 @@ let started = false;
 let client;
 const devices = {};
 
-module.exports.start = async function (uri, clientID = 'Remotiot', logger = console.log) {
+module.exports.start = async function (uri, clientID = 'RemotIoT', logger = console.log) {
   // check started
   if (started) {
     return;

@@ -61,7 +61,7 @@ ipcMain.on('start', (_, opts) => {
   const broker = opts.broker || 'mqtt://remotiot:remotiot@remotiot.cloud.shiftr.io';
 
   // run bridge
-  start(broker, 'Remotiot', logger);
+  start(broker, 'RemotIoT', logger);
 });
 
 ipcMain.on('stop', async () => {
