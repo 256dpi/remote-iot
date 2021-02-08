@@ -6,10 +6,7 @@ const txUUID = '6e400002b5a3f393e0a9e50e24dcca9e';
 const rxUUID = '6e400003b5a3f393e0a9e50e24dcca9e';
 
 const connections = {};
-
 const devices = {};
-
-// TODO: Cleanup listeners on disconnect.
 
 const client = mqtt.connect("mqtt://garage:testtest@garage.cloud.shiftr.io", {
   clientId: 'Remotiot'
@@ -79,6 +76,9 @@ noble.on('discover', async function (peripheral) {
 
     // delete connection
     delete connections[peripheral.id];
+
+    // delete device
+    delete devices[peripheral.id];
   }
 
   // log
@@ -102,7 +102,7 @@ noble.on('discover', async function (peripheral) {
   const txChar = uartService.characteristics.find(chr => chr.uuid === txUUID);
   const rxChar = uartService.characteristics.find(chr => chr.uuid === rxUUID);
   if (!txChar || !rxChar) {
-    console.log("==> UART TX/RX characteristic not found: ", name);
+    console.log("==> UART characteristics not found: ", name);
     await disconnect()
     return;
   }
@@ -152,13 +152,10 @@ noble.on('discover', async function (peripheral) {
   console.log("==> Device connected:", name);
 
   // store device
-  devices[peripheral] = device;
+  devices[peripheral.id] = device;
 
   // handle disconnect
-  peripheral.on('disconnect', async () => {
-    // remove device
-    delete devices[peripheral];
-
+  peripheral.once('disconnect', async () => {
     // disconnect
     await disconnect()
 
