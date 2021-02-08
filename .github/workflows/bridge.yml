@@ -50,6 +50,12 @@ jobs:
         run: node ../.github/hack/update-package-version.js
         working-directory: bridge
 
+      # need for node-usb to work on window
+      - name: Rebuild
+        run: yarn rebuild
+        working-directory: bridge
+        if: matrix.os == 'windows-latest'
+
       - name: Build
         run: yarn make
         working-directory: bridge
