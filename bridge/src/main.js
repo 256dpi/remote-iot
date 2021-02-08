@@ -46,28 +46,24 @@ app.on('activate', async function () {
   }
 });
 
-let started = false;
+function logger(msg) {
+  // log message
+  console.log(msg);
+
+  // forward message
+  if (mainWindow) {
+    mainWindow.webContents.send('log', msg);
+  }
+}
 
 ipcMain.on('start', (_, opts) => {
-  // check flag
-  if (started) {
-    return;
-  }
-
-  // set flag
-  started = true;
-
   // get broker
   const broker = opts.broker || 'mqtt://garage:testtest@garage.cloud.shiftr.io';
 
   // run bridge
-  start(broker, 'Remotiot', (msg) => {
-    // log message
-    console.log(msg);
+  start(broker, 'Remotiot', logger);
+});
 
-    // forward message
-    if (mainWindow) {
-      mainWindow.webContents.send('log', msg);
-    }
-  });
+ipcMain.on('stop', async () => {
+  await stop(logger);
 });

@@ -5,12 +5,25 @@ const uartUUID = '6e400001b5a3f393e0a9e50e24dcca9e';
 const txUUID = '6e400002b5a3f393e0a9e50e24dcca9e';
 const rxUUID = '6e400003b5a3f393e0a9e50e24dcca9e';
 
+let started = false;
+let client;
 let scanning = false;
 const devices = {};
 
-module.exports.start = function (uri, clientID = 'Remotiot', logger = console.log) {
+module.exports.start = async function (uri, clientID = 'Remotiot', logger = console.log) {
+  // check started
+  if (started) {
+    return;
+  }
+
+  // set flag
+  started = true;
+
+  // log
+  logger("==> Starting...");
+
   // prepare client
-  const client = mqtt.connect(uri, {
+  client = mqtt.connect(uri, {
     clientId: clientID,
   });
 
@@ -46,6 +59,9 @@ module.exports.start = function (uri, clientID = 'Remotiot', logger = console.lo
     }
   });
 
+  // start scanning
+  await noble.startScanningAsync([], true);
+
   // handle state changes
   noble.on('stateChange', async function (state) {
     if (state === 'poweredOn') {
@@ -63,6 +79,7 @@ module.exports.start = function (uri, clientID = 'Remotiot', logger = console.lo
   noble.on('discover', async function (peripheral) {
     // get name
     const name = peripheral.advertisement.localName || '';
+    console.log(name);
 
     // check name
     if (!name.includes('Calliope')) {
@@ -103,11 +120,11 @@ module.exports.start = function (uri, clientID = 'Remotiot', logger = console.lo
     // log
     logger('==> Device found: ' + name);
 
-    // connect
-    await peripheral.connectAsync();
-
     // set flag
     device.connected = true;
+
+    // connect
+    await peripheral.connectAsync();
 
     // discover all services and characteristics
     await peripheral.discoverAllServicesAndCharacteristicsAsync();
@@ -182,14 +199,26 @@ module.exports.start = function (uri, clientID = 'Remotiot', logger = console.lo
   });
 };
 
-module.exports.stop = async function () {
+module.exports.stop = async function (logger = console.log) {
+  // check flag
+  if (!started) {
+    return;
+  }
+
+  // set flag
+  started = false;
+
   // log
-  console.log("==> Stopping...");
+  logger("==> Stopping...");
 
   // stop scanning
   if (scanning) {
     await noble.stopScanningAsync();
   }
+
+  // remove listeners
+  noble.removeAllListeners('stateChange');
+  noble.removeAllListeners('discover');
 
   // disconnect connections
   for (const device of Object.values(devices)) {
@@ -197,4 +226,7 @@ module.exports.stop = async function () {
       await device.peripheral.disconnectAsync();
     }
   }
+
+  // log
+  logger("==> Stopped!");
 };
