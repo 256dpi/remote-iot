@@ -5,9 +5,29 @@ const uartUUID = '6e400001b5a3f393e0a9e50e24dcca9e';
 const txUUID = '6e400002b5a3f393e0a9e50e24dcca9e';
 const rxUUID = '6e400003b5a3f393e0a9e50e24dcca9e';
 
+let scanning = false;
+let discoverHandler;
+
+// handle state changes
+noble.on('stateChange', async function (state) {
+  if (state === 'poweredOn') {
+    await noble.startScanningAsync([], true);
+    scanning = true;
+  } else {
+    await noble.stopScanningAsync();
+    scanning = false;
+  }
+});
+
+// handle discovered devices
+noble.on('discover', async function (peripheral) {
+  if(discoverHandler) {
+    discoverHandler(peripheral);
+  }
+});
+
 let started = false;
 let client;
-let scanning = false;
 const devices = {};
 
 module.exports.start = async function (uri, clientID = 'Remotiot', logger = console.log) {
@@ -59,27 +79,11 @@ module.exports.start = async function (uri, clientID = 'Remotiot', logger = cons
     }
   });
 
-  // start scanning
-  await noble.startScanningAsync([], true);
-
-  // handle state changes
-  noble.on('stateChange', async function (state) {
-    if (state === 'poweredOn') {
-      logger('==> Started scanning...');
-      await noble.startScanningAsync([], true);
-      scanning = true;
-    } else {
-      logger('==> Stopped scanning...');
-      await noble.stopScanningAsync();
-      scanning = false;
-    }
-  });
 
   // handle discovered devices
-  noble.on('discover', async function (peripheral) {
+  discoverHandler = async function (peripheral) {
     // get name
     const name = peripheral.advertisement.localName || '';
-    console.log(name);
 
     // check name
     if (!name.includes('Calliope')) {
@@ -196,7 +200,7 @@ module.exports.start = async function (uri, clientID = 'Remotiot', logger = cons
       // log
       logger('==> Device disconnected: ' + name);
     });
-  });
+  };
 };
 
 module.exports.stop = async function (logger = console.log) {
@@ -211,14 +215,11 @@ module.exports.stop = async function (logger = console.log) {
   // log
   logger("==> Stopping...");
 
-  // stop scanning
-  if (scanning) {
-    await noble.stopScanningAsync();
-  }
+  // unset handler
+  discoverHandler = null;
 
-  // remove listeners
-  noble.removeAllListeners('stateChange');
-  noble.removeAllListeners('discover');
+  // disconnect
+  client.end(true);
 
   // disconnect connections
   for (const device of Object.values(devices)) {
