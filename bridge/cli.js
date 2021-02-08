@@ -1,3 +1,3 @@
-const run = require('./src/bridge');
+const { start } = require('./src/bridge');
 
-run('mqtt://garage:testtest@garage.cloud.shiftr.io');
+start('mqtt://garage:testtest@garage.cloud.shiftr.io');
