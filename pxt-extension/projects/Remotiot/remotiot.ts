@@ -8,10 +8,12 @@ namespace remotiot {
     let ONLINE: () => void;
 
     /**
-     * Start...
+     * Initialize the system.
      * @param name your name, eg: "lisa"
      */
-    //%block="start with name $name"
+    //%block="initialize with name $name"
+    //%block.loc.de="initialisieren mit name $name"
+    //%weight=100
     export function start(name: string): void {
         // store name
         NAME = name;
@@ -40,18 +42,21 @@ namespace remotiot {
     }
 
     /**
-     * Online...
+     * The callback called when online.
      */
     //%block="on online"
+    //%block.loc.de="wenn online"
+    //%weight=60
     export function onOnline(handler: () => void): void {
         // store handler
         ONLINE = handler;
     }
 
     /**
-     * Offline...
+     * The callback called when offline.
      */
     //%block="on offline"
+    //%block.loc.de="wenn offline"
     export function onOffline(handler: () => void): void {
         // forward callback
         bluetooth.onBluetoothDisconnected(handler);
@@ -63,16 +68,20 @@ namespace remotiot {
     * @param msg the message, eg: "hello!"
     */
     //%block="send message $msg to $name"
+    //%block.loc.de="schicke nachricht $msg an $name"
+    //%weight=80
     export function send(name: string, msg: string): void {
         // write message
         bluetooth.uartWriteLine(`${NAME};${name};${msg}`);
     }
 
     /**
-     * Message...
+     * The callback called when a message has been received.
      */
-    //%block="on message $msg from $name"
-    //% draggableParameters
+    //%block="on message $msg received from $name"
+    //%block.loc.de="wenn nachricht $msg empfangen von $name"
+    //%draggableParameters
+    //%weight=70
     export function onMessage(body: (name: string, msg: string) => void): void {
         // receive data line by line
         bluetooth.onUartDataReceived(serial.delimiters(Delimiters.NewLine), function () {
