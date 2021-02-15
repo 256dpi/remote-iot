@@ -40,8 +40,8 @@ setInterval(async () => {
 
 let started = false;
 let client;
-const bleDevices = {};
-const spDevices = {};
+let bleDevices = {};
+let spDevices = {};
 
 module.exports.start = async function (uri, clientID = 'RemotIoT', logger = console.log) {
   // check started
@@ -355,8 +355,9 @@ module.exports.stop = async function (logger = console.log) {
   // log
   logger('==> Stopping...');
 
-  // unset handler
+  // unset handlers
   discoverHandler = null;
+  portHandler = null;
 
   // disconnect
   client.end(true);
@@ -375,6 +376,10 @@ module.exports.stop = async function (logger = console.log) {
       await device.port.close();
     }
   }
+
+  // reset lists
+  bleDevices = {};
+  spDevices = {};
 
   // log
   logger('==> Stopped!');
