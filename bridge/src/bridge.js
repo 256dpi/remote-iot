@@ -1,5 +1,8 @@
+const path = require('path');
 const mqtt = require('mqtt');
 const noble = require('@abandonware/noble');
+const SerialPort = require('serialport');
+const Readline = require('@serialport/parser-readline');
 
 const uartUUID = '6e400001b5a3f393e0a9e50e24dcca9e';
 const txUUID = '6e400002b5a3f393e0a9e50e24dcca9e';
@@ -23,9 +26,22 @@ noble.on('discover', async function (peripheral) {
   }
 });
 
+let portHandler;
+
+// handle discovered ports
+setInterval(async () => {
+  if (portHandler) {
+    const ports = await SerialPort.list();
+    for (const port of ports) {
+      portHandler(port);
+    }
+  }
+}, 2000);
+
 let started = false;
 let client;
 const bleDevices = {};
+const spDevices = {};
 
 module.exports.start = async function (uri, clientID = 'RemotIoT', logger = console.log) {
   // check started
@@ -74,6 +90,13 @@ module.exports.start = async function (uri, clientID = 'RemotIoT', logger = cons
         device.rxChar.write(buf, true);
       }
     }
+
+    // relay message
+    for (const device of Object.values(spDevices)) {
+      if (device.filter === topic) {
+        device.port.write(buf, true);
+      }
+    }
   });
 
   // handle discovered devices
@@ -99,7 +122,6 @@ module.exports.start = async function (uri, clientID = 'RemotIoT', logger = cons
       rxChar: null,
       filter: '',
       connected: false,
-      read: false,
     };
 
     // store device
@@ -205,6 +227,120 @@ module.exports.start = async function (uri, clientID = 'RemotIoT', logger = cons
       logger('==> Device disconnected: ' + name);
     });
   };
+
+  // handle discovered ports
+  portHandler = async function (info) {
+    // {
+    //   path: '/dev/tty.usbmodem0008888788511',
+    //   manufacturer: 'SEGGER',
+    //   serialNumber: '000888878851',
+    //   pnpId: undefined,
+    //   locationId: '14130000',
+    //   vendorId: '1366',
+    //   productId: '1025'
+    // }
+
+    // check vendor and product id
+    if (info.vendorId !== '1366' || info.productId !== '1025') {
+      return;
+    }
+
+    // check device
+    if (spDevices[info.path]) {
+      return;
+    }
+
+    // get name
+    const name = path.basename(info.path);
+
+    // prepare device
+    const device = {
+      path: name,
+      info: info,
+      filter: '',
+      opened: false,
+    };
+
+    // store device
+    spDevices[info.path] = device;
+
+    // define cleanup
+    const cleanup = async () => {
+      // close if opened
+      if (device.opened) {
+        await device.port.close();
+        device.opened = false;
+      }
+
+      // delete device
+      delete spDevices[info.path];
+    };
+
+    // log
+    logger('==> Device found: ' + name);
+
+    // open port
+    const port = new SerialPort(info.path, { baudRate: 115200 });
+
+    // set port and flag
+    device.port = port;
+    device.opened = true;
+
+    // prepare parser
+    const parser = port.pipe(new Readline({ delimiter: '\r\n' }));
+
+    // handle messages
+    parser.on('data', (data) => {
+      // get message
+      const msg = data.toString().trim();
+
+      // check message
+      if (msg.length === 0) {
+        return;
+      }
+
+      // check config
+      if (msg.startsWith('$config;')) {
+        // get filter
+        device.filter = msg.slice(8);
+
+        // log
+        logger('==> Got config: ' + device.filter);
+
+        return;
+      }
+
+      // log
+      logger('==> Outgoing message: ' + msg);
+
+      // parse message
+      const segments = msg.split(';');
+      if (segments.length !== 3) {
+        return;
+      }
+
+      // publish message
+      client.publish(segments[1], msg);
+    });
+
+    // write ready
+    await port.write('$ready;;\n', 'utf8');
+
+    // log
+    logger('==> Device opened: ' + name);
+
+    // handle close
+    port.once('close', async () => {
+      // set flag
+      device.opened = false;
+
+      // disconnect
+      await cleanup();
+
+      // log
+      logger('==> Device closed: ' + name);
+    });
+  };
 };
 
 module.exports.stop = async function (logger = console.log) {
@@ -225,10 +361,18 @@ module.exports.stop = async function (logger = console.log) {
   // disconnect
   client.end(true);
 
-  // disconnect connections
+  // disconnect bluetooth devices
   for (const device of Object.values(bleDevices)) {
     if (device.connected) {
       await device.peripheral.disconnectAsync();
+    }
+  }
+
+  // close serial ports
+  for (const device of Object.values(spDevices)) {
+    if (device.opened) {
+      await device.port.write('$close;;\n');
+      await device.port.close();
     }
   }
 

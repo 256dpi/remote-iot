@@ -24,7 +24,8 @@
   },
   "dependencies": {
     "@abandonware/noble": "^1.9.2-11",
-    "mqtt": "^4.2.6"
+    "mqtt": "^4.2.6",
+    "serialport": "^9.0.6"
   },
   "devDependencies": {
     "@electron-forge/cli": "6.0.0-beta.54",

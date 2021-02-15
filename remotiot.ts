@@ -5,6 +5,7 @@
 namespace remotiot {
     let NAME: string;
     let INIT: boolean;
+    let SERIAL: boolean;
     let ONLINE: () => void;
     let MESSAGE: (name: string, msg: string) => void;
     let OFFLINE: () => void;
@@ -19,8 +20,56 @@ namespace remotiot {
         // set flag
         INIT = true;
 
-        // register data handler
-        bluetooth.onUartDataReceived(serial.delimiters(Delimiters.NewLine), function () {
+        // set baud rate
+        serial.setBaudRate(115200);
+
+        // register serial receive handler
+        serial.onDataReceived(serial.delimiters(Delimiters.NewLine), () => {
+            // read line
+            let name = serial.readUntil(";");
+            let to = serial.readUntil(";");
+            let msg = serial.readUntil("\n");
+
+            // handle ready
+            if (name === "$ready") {
+                // send configuration
+                serial.writeLine(`$config;${NAME}`);
+
+                // call handler if available
+                if(ONLINE) {
+                    ONLINE();
+                }
+
+                // set flag
+                SERIAL = true;
+
+                return;
+            }
+
+            // handle close
+            if (name == "$close") {
+                // call handle if available
+                if(OFFLINE) {
+                    OFFLINE();
+                }
+
+                // set flag
+                SERIAL = false;
+
+                return;
+            }
+
+            // check flag and name
+            if (!SERIAL || to !== NAME) {
+                return;
+            }
+
+            // yield message
+            MESSAGE(name, msg);
+        });
+
+        // register bluetooth data handler
+        bluetooth.onUartDataReceived(serial.delimiters(Delimiters.NewLine),() => {
             // read line
             let name = bluetooth.uartReadUntil(";");
             let to = bluetooth.uartReadUntil(";");
@@ -42,8 +91,8 @@ namespace remotiot {
                 return;
             }
 
-            // check name
-            if (to !== NAME) {
+            // check flag and name
+            if (!CONNECTED || to !== NAME) {
                 return;
             }
 
@@ -78,7 +127,7 @@ namespace remotiot {
         NAME = name;
 
         // update config
-        if (CONNECTED) {
+        if (SERIAL || CONNECTED) {
             bluetooth.uartWriteLine(`$config;${NAME}`);
         }
     }
@@ -123,7 +172,11 @@ namespace remotiot {
         init();
 
         // write message
-        bluetooth.uartWriteLine(`${NAME};${name};${msg}`);
+        if (SERIAL) {
+            serial.writeLine(`${NAME};${name};${msg}`);
+        } else if(CONNECTED) {
+            bluetooth.uartWriteLine(`${NAME};${name};${msg}`);
+        }
     }
 
     /**
