@@ -18,14 +18,14 @@ noble.on('stateChange', async function (state) {
 
 // handle discovered devices
 noble.on('discover', async function (peripheral) {
-  if(discoverHandler) {
+  if (discoverHandler) {
     discoverHandler(peripheral);
   }
 });
 
 let started = false;
 let client;
-const devices = {};
+const bleDevices = {};
 
 module.exports.start = async function (uri, clientID = 'RemotIoT', logger = console.log) {
   // check started
@@ -37,7 +37,7 @@ module.exports.start = async function (uri, clientID = 'RemotIoT', logger = cons
   started = true;
 
   // log
-  logger("==> Starting...");
+  logger('==> Starting...');
 
   // prepare client
   client = mqtt.connect(uri, {
@@ -69,7 +69,7 @@ module.exports.start = async function (uri, clientID = 'RemotIoT', logger = cons
     const buf = Buffer.from(msg + '\n', 'utf8');
 
     // relay message
-    for (const device of Object.values(devices)) {
+    for (const device of Object.values(bleDevices)) {
       if (device.filter === topic) {
         device.rxChar.write(buf, true);
       }
@@ -87,7 +87,7 @@ module.exports.start = async function (uri, clientID = 'RemotIoT', logger = cons
     }
 
     // check device
-    if (devices[peripheral.id]) {
+    if (bleDevices[peripheral.id]) {
       return;
     }
 
@@ -103,7 +103,7 @@ module.exports.start = async function (uri, clientID = 'RemotIoT', logger = cons
     };
 
     // store device
-    devices[peripheral.id] = device;
+    bleDevices[peripheral.id] = device;
 
     // define cleanup
     const cleanup = async () => {
@@ -114,7 +114,7 @@ module.exports.start = async function (uri, clientID = 'RemotIoT', logger = cons
       }
 
       // delete device
-      delete devices[peripheral.id];
+      delete bleDevices[peripheral.id];
     };
 
     // log
@@ -217,7 +217,7 @@ module.exports.stop = async function (logger = console.log) {
   started = false;
 
   // log
-  logger("==> Stopping...");
+  logger('==> Stopping...');
 
   // unset handler
   discoverHandler = null;
@@ -226,12 +226,12 @@ module.exports.stop = async function (logger = console.log) {
   client.end(true);
 
   // disconnect connections
-  for (const device of Object.values(devices)) {
+  for (const device of Object.values(bleDevices)) {
     if (device.connected) {
       await device.peripheral.disconnectAsync();
     }
   }
 
   // log
-  logger("==> Stopped!");
+  logger('==> Stopped!');
 };

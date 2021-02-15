@@ -27,7 +27,7 @@ stopButton.onclick = () => {
   brokerInput.disabled = false;
   startButton.disabled = false;
   stopButton.disabled = true;
-}
+};
 
 window.ipcRendrer.on('log', (_, msg) => {
   // append message

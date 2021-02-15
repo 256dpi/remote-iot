@@ -18,7 +18,7 @@ const config = {
     },
     {
       name: '@electron-forge/maker-dmg',
-      platforms: ['darwin']
+      platforms: ['darwin'],
     },
     {
       name: '@electron-forge/maker-squirrel',
