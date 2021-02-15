@@ -94,7 +94,7 @@ module.exports.start = async function (uri, clientID = 'RemotIoT', logger = cons
     // relay message
     for (const device of Object.values(spDevices)) {
       if (device.filter === topic) {
-        device.port.write(buf, true);
+        device.port.write(buf);
       }
     }
   });
@@ -334,7 +334,7 @@ module.exports.start = async function (uri, clientID = 'RemotIoT', logger = cons
     });
 
     // write ready
-    await port.write('$ready;;\n', 'utf8');
+    await port.write('$ready;;\n');
 
     // log
     logger('==> Device opened: ' + name);
