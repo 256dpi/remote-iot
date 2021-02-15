@@ -148,6 +148,11 @@ module.exports.start = async function (uri, clientID = 'RemotIoT', logger = cons
     // connect
     await peripheral.connectAsync();
 
+    // handle errors
+    peripheral.on('error', (err) => {
+      logger('==> Error: ' + err.toString());
+    })
+
     // discover all services and characteristics
     await peripheral.discoverAllServicesAndCharacteristicsAsync();
 
@@ -285,6 +290,11 @@ module.exports.start = async function (uri, clientID = 'RemotIoT', logger = cons
     // set port and flag
     device.port = port;
     device.opened = true;
+
+    // handle errors
+    port.on('error', (err) => {
+      logger('==> Error: ' + err.toString());
+    })
 
     // prepare parser
     const parser = port.pipe(new Readline({ delimiter: '\r\n' }));
