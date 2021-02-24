@@ -152,7 +152,7 @@ module.exports.start = async function (uri, clientID = 'RemotIoT', logger = cons
     // handle errors
     peripheral.on('error', (err) => {
       logger('==> Error: ' + err.toString());
-    })
+    });
 
     // discover all services and characteristics
     await peripheral.discoverAllServicesAndCharacteristicsAsync();
@@ -252,8 +252,19 @@ module.exports.start = async function (uri, clientID = 'RemotIoT', logger = cons
     //   productId: '1025'
     // }
 
+    // supported ids
+    const supported = [
+      { vid: '1366', pid: '1025' }, // macOS
+    ];
+
     // check vendor and product id
-    if (info.vendorId !== '1366' || info.productId !== '1025') {
+    let matched = false;
+    for (let rule of supported) {
+      if (rule.vid === info.vendorId && rule.pid === info.productId) {
+        matched = true;
+      }
+    }
+    if (!matched) {
       return;
     }
 
@@ -301,7 +312,7 @@ module.exports.start = async function (uri, clientID = 'RemotIoT', logger = cons
     // handle errors
     port.on('error', (err) => {
       logger('==> Error: ' + err.toString());
-    })
+    });
 
     // prepare parser
     const parser = port.pipe(new Readline({ delimiter: '\r\n' }));
