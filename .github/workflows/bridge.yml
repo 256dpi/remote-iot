@@ -43,7 +43,7 @@ jobs:
           restore-keys: yarn-${{ runner.os }}-
 
       - name: Yarn Install
-        run: yarn install
+        run: yarn install --ignore-platform
         working-directory: bridge
 
       - name: Update Package Version
