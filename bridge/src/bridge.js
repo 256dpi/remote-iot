@@ -254,7 +254,8 @@ module.exports.start = async function (uri, clientID = 'RemotIoT', logger = cons
 
     // supported ids
     const supported = [
-      { vid: '1366', pid: '1025' }, // macOS
+      { vid: '1366', pid: '1025' }, // v2.0
+      { vid: '0D28', pid: '0204' }, // v1.3
     ];
 
     // check vendor and product id
