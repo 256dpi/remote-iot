@@ -41,6 +41,7 @@ setInterval(async () => {
 let started = false;
 let client;
 let bleDevices = {};
+let usbDevices = {};
 let spDevices = {};
 
 module.exports.start = async function (uri, clientID = 'RemotIoT', logger = console.log) {
@@ -235,6 +236,12 @@ module.exports.start = async function (uri, clientID = 'RemotIoT', logger = cons
 
   // handle discovered ports
   portHandler = async function (info) {
+    // check device
+    if (!usbDevices[info.path]) {
+      logger(`==> USB: ${info.path} (${info.vendorId}, ${info.productId})`);
+      usbDevices[info.path] = true;
+    }
+
     // {
     //   path: '/dev/tty.usbmodem0008888788511',
     //   manufacturer: 'SEGGER',
@@ -389,6 +396,7 @@ module.exports.stop = async function (logger = console.log) {
 
   // reset lists
   bleDevices = {};
+  usbDevices = {};
   spDevices = {};
 
   // log
