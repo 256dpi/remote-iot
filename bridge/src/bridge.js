@@ -1,6 +1,6 @@
 const path = require('path');
 const mqtt = require('mqtt');
-const noble = require('@abandonware/noble');
+const noble = process.platform === 'win32' ? require('noble-winrt') : require('@abandonware/noble');
 const SerialPort = require('serialport');
 const Readline = require('@serialport/parser-readline');
 
