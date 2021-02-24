@@ -1,5 +1,5 @@
 {
-    "name": "RemotIoT",
+    "name": "Remote IoT",
     "version": "0.1.0",
     "description": "Remote IoT at Home",
     "license": "MIT",
@@ -9,7 +9,7 @@
     },
     "files": [
         "README.md",
-        "remotiot.ts"
+        "blocks.ts"
     ],
     "testFiles": [
         "test.ts"

@@ -5,10 +5,10 @@ const pkg = require('./package.json');
 const config = {
   packagerConfig: {
     asar: false, // required to access CLI
-    appBundleId: 'com.256dpi.remotiot',
+    appBundleId: 'com.256dpi.remote-iot',
     appCategoryType: 'public.app-category.developer-tools',
     appCopyright: `Copyright © ${new Date().getFullYear()} Joël Gähwiler. All rights reserved.`,
-    executableName: 'remotiot',
+    executableName: 'remote-iot',
     ignore: [/\.gitignore/, /\.node-version/, /cli\.js/, /forge\.js/, /yarn\.lock/],
   },
   makers: [
@@ -24,8 +24,8 @@ const config = {
       name: '@electron-forge/maker-squirrel',
       platforms: ['win32'],
       config: {
-        name: 'remotiot',
-        exe: 'remotiot.exe',
+        name: 'remote-iot',
+        exe: 'remote-iot.exe',
       },
     },
     {
@@ -33,8 +33,8 @@ const config = {
       platforms: ['linux'],
       config: {
         options: {
-          name: 'remotiot',
-          bin: 'remotiot',
+          name: 'remote-iot',
+          bin: 'remote-iot',
         },
       },
     },
@@ -43,8 +43,8 @@ const config = {
       platforms: ['linux'],
       config: {
         options: {
-          name: 'remotiot',
-          bin: 'remotiot',
+          name: 'remote-iot',
+          bin: 'remote-iot',
         },
       },
     },
@@ -55,12 +55,12 @@ const config = {
 
       // prepare rules
       const rules = [
-        { test: /.*\.zip/, name: `remotiot-${pkg.version}-${process.platform}.zip` },
-        { test: /.*\.dmg/, name: `remotiot-${pkg.version}.dmg` },
-        { test: /.*\.exe/, name: `remotiot-${pkg.version}.exe` },
-        { test: /.*\.deb/, name: `remotiot-${pkg.version}.deb` },
-        { test: /.*\.rpm/, name: `remotiot-${pkg.version}.rpm` },
-        { test: /.*-full\.nupkg/, name: `remotiot-${pkg.version}-full.nupkg` },
+        { test: /.*\.zip/, name: `remote-iot-${pkg.version}-${process.platform}.zip` },
+        { test: /.*\.dmg/, name: `remote-iot-${pkg.version}.dmg` },
+        { test: /.*\.exe/, name: `remote-iot-${pkg.version}.exe` },
+        { test: /.*\.deb/, name: `remote-iot-${pkg.version}.deb` },
+        { test: /.*\.rpm/, name: `remote-iot-${pkg.version}.rpm` },
+        { test: /.*-full\.nupkg/, name: `remote-iot-${pkg.version}-full.nupkg` },
       ];
 
       // rename files

@@ -1,9 +1,9 @@
 {
   "name": "bridge",
-  "productName": "RemotIoT",
+  "productName": "Remote IoT",
   "version": "0.1.0",
   "private": true,
-  "description": "The RemotIoT Bridge",
+  "description": "The Remote IoT Bridge",
   "main": "src/main.js",
   "scripts": {
     "cli": "node cli.js",

@@ -44,7 +44,7 @@ let bleDevices = {};
 let usbDevices = {};
 let spDevices = {};
 
-module.exports.start = async function (uri, clientID = 'RemotIoT', logger = console.log) {
+module.exports.start = async function (uri, clientID = 'Remote-IoT', logger = console.log) {
   // check started
   if (started) {
     return;

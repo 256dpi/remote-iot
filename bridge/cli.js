@@ -1,6 +1,6 @@
 const { start, stop } = require('./src/bridge');
 
-start('mqtt://remotiot:remotiot@remotiot.cloud.shiftr.io');
+start('mqtt://remote-iot:remote-iot@remote-iot.cloud.shiftr.io');
 
 process.on('SIGINT', async () => {
   await stop();

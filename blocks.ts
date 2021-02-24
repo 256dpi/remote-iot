@@ -1,8 +1,8 @@
 /**
-* RemotIoT blocks
+* Remote IoT blocks
 */
 //% weight=100 color=#0fbc11 icon=""
-namespace remotiot {
+namespace remote_iot {
     let NAME: string;
     let INIT: boolean;
     let SERIAL: boolean;

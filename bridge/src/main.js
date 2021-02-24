@@ -58,10 +58,10 @@ function logger(msg) {
 
 ipcMain.on('start', (_, opts) => {
   // get broker
-  const broker = opts.broker || 'mqtt://remotiot:remotiot@remotiot.cloud.shiftr.io';
+  const broker = opts.broker || 'mqtt://remote-iot:remote-iot@remote-iot.cloud.shiftr.io';
 
   // run bridge
-  start(broker, 'RemotIoT', logger);
+  start(broker, 'Remote-IoT', logger);
 });
 
 ipcMain.on('stop', async () => {
