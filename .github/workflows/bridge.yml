@@ -3,7 +3,7 @@ name: Bridge
 on:
   push:
     branches:
-      - master
+      - main
     paths:
       - .github/workflows/bridge.yml
     tags:
