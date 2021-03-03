@@ -16,7 +16,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [macos-latest, ubuntu-latest, windows-2016]
     defaults:
       run:
         shell: bash
@@ -30,12 +30,6 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 12.x
-
-      - name: Select Visual Studio 2017
-        uses: microsoft/setup-msbuild@v1.0.2
-        with:
-          vs-version: '[15.9,15.10)'
-        if: matrix.os == 'windows-latest'
 
       - name: Cache Yarn
         id: yarn-cache-dir-path
