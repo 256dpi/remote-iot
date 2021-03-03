@@ -31,6 +31,11 @@ jobs:
         with:
           node-version: 12.x
 
+      - name: Select Visual Studio 2017
+        uses: microsoft/setup-msbuild@v1.0.2
+        with:
+          vs-version: '[15.9,15.10)'
+
       - name: Cache Yarn
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
