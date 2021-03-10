@@ -204,7 +204,7 @@ module.exports.start = async function (uri, clientID = 'Remote-IoT', logger = co
 
       // parse message
       const segments = msg.split(';');
-      if (segments.length !== 3) {
+      if (segments.length !== 4) {
         return;
       }
 
@@ -216,7 +216,7 @@ module.exports.start = async function (uri, clientID = 'Remote-IoT', logger = co
     await txChar.subscribeAsync();
 
     // write ready
-    await rxChar.writeAsync(Buffer.from('$ready;;\n', 'utf8'), true);
+    await rxChar.writeAsync(Buffer.from('$ready;;;\n', 'utf8'), true);
 
     // log
     logger('==> Device connected: ' + name);
@@ -344,7 +344,7 @@ module.exports.start = async function (uri, clientID = 'Remote-IoT', logger = co
 
       // parse message
       const segments = msg.split(';');
-      if (segments.length !== 3) {
+      if (segments.length !== 4) {
         return;
       }
 
@@ -353,7 +353,7 @@ module.exports.start = async function (uri, clientID = 'Remote-IoT', logger = co
     });
 
     // write ready
-    await port.write('$ready;;\n');
+    await port.write('$ready;;;\n');
 
     // log
     logger('==> Device opened: ' + name);

@@ -1,13 +1,13 @@
 /**
 * Remote IoT blocks
 */
-//% weight=100 color=#0fbc11 icon=""
+//% weight=100 color=#0fbc11 icon="" block="Remote IoT"
 namespace remote_iot {
     let NAME: string;
     let INIT: boolean;
     let SERIAL: boolean;
     let ONLINE: () => void;
-    let MESSAGE: (name: string, msg: string) => void;
+    let MESSAGE: (name: string, id: string, msg: string) => void;
     let OFFLINE: () => void;
     let CONNECTED = false;
 
@@ -28,6 +28,7 @@ namespace remote_iot {
             // read line
             let name = serial.readUntil(";");
             let to = serial.readUntil(";");
+            let id = serial.readUntil(";");
             let msg = serial.readUntil("\n");
 
             // handle ready
@@ -65,7 +66,7 @@ namespace remote_iot {
             }
 
             // yield message
-            MESSAGE(name, msg);
+            MESSAGE(name, id, msg);
         });
 
         // register bluetooth data handler
@@ -73,6 +74,7 @@ namespace remote_iot {
             // read line
             let name = bluetooth.uartReadUntil(";");
             let to = bluetooth.uartReadUntil(";");
+            let id = bluetooth.uartReadUntil(';');
             let msg = bluetooth.uartReadUntil("\n");
 
             // check name
@@ -97,7 +99,7 @@ namespace remote_iot {
             }
 
             // yield message
-            MESSAGE(name, msg);
+            MESSAGE(name, id, msg);
         });
 
         // register offline handler
@@ -162,31 +164,32 @@ namespace remote_iot {
     /**
     * Send a message to a peer.
     * @param name the recipient, eg: "peter"
+    * @param id the identifier, eg: "txt"
     * @param msg the message, eg: "hello!"
     */
-    //%block="send message $msg to $name"
-    //%block.loc.de="schicke nachricht $msg an $name"
+    //%block="send message $tex with $id to $name"
+    //%block.loc.de="schicke nachricht $text mit $id an $name"
     //%weight=80
-    export function send(name: string, msg: string): void {
+    export function send(name: string, id: string, msg: string): void {
         // init
         init();
 
         // write message
         if (SERIAL) {
-            serial.writeLine(`${NAME};${name};${msg}`);
+            serial.writeLine(`${NAME};${name};${id};${msg}`);
         } else if(CONNECTED) {
-            bluetooth.uartWriteLine(`${NAME};${name};${msg}`);
+            bluetooth.uartWriteLine(`${NAME};${name};${id};${msg}`);
         }
     }
 
     /**
      * The callback called when a message has been received.
      */
-    //%block="on message $msg received from $name"
-    //%block.loc.de="wenn nachricht $msg empfangen von $name"
+    //%block="on message $text with $id received from $name"
+    //%block.loc.de="wenn nachricht $text mit $id empfangen von $name"
     //%draggableParameters
     //%weight=70
-    export function onMessage(handler: (name: string, msg: string) => void): void {
+    export function onMessage(handler: (name: string, id: string, msg: string) => void): void {
         // init
         init();
 
