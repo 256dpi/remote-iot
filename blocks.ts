@@ -119,7 +119,7 @@ namespace remote_iot {
      * @param name your name, eg: "lisa"
      */
     //%block="initialize with name $name"
-    //%block.loc.de="initialisieren mit name $name"
+    //%block.loc.de="initialisieren mit Name $name"
     //%weight=100
     export function start(name: string): void {
         // init
@@ -164,11 +164,11 @@ namespace remote_iot {
     /**
     * Send a message to a peer.
     * @param name the recipient, eg: "peter"
-    * @param id the identifier, eg: "txt"
+    * @param id the identifier, eg: "msg"
     * @param text the message, eg: "hello!"
     */
-    //%block="send message $text with $id to $name"
-    //%block.loc.de="schicke nachricht $text mit $id an $name"
+    //%block="send message $text with identifier $id to recipient $name"
+    //%block.loc.de="schicke Nachricht $text mit der Kennung $id an den Empfänger $name"
     //%weight=80
     export function send(name: string, id: string, text: string): void {
         // init
@@ -185,8 +185,8 @@ namespace remote_iot {
     /**
      * The callback called when a message has been received.
      */
-    //%block="on message $text with $id received from $name"
-    //%block.loc.de="wenn nachricht $text mit $id empfangen von $name"
+    //%block="on message $text with identifier $id received from sender $name"
+    //%block.loc.de="wenn Nachricht $text mit Kennung $id empfangen von Absender $name"
     //%draggableParameters
     //%weight=70
     export function onMessage(handler: (name: string, id: string, text: string) => void): void {
