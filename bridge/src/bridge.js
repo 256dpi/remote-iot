@@ -328,6 +328,12 @@ module.exports.start = async function (uri, clientID = 'Remote-IoT', logger = co
         return;
       }
 
+      // check open
+      if (msg.includes('$open')) {
+        port.write('$ready;;;\n');
+        return;
+      }
+
       // check config
       if (msg.startsWith('$config;')) {
         // get filter
@@ -401,7 +407,7 @@ module.exports.stop = async function (logger = console.log) {
   // close serial ports
   for (const device of Object.values(spDevices)) {
     if (device.opened) {
-      await device.port.write('$close;;\n');
+      await device.port.write('$close;;;\n');
       await device.port.close();
     }
   }

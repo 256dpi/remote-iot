@@ -23,6 +23,9 @@ namespace remote_iot {
         // set baud rate
         serial.setBaudRate(115200);
 
+        // send open
+        serial.writeLine(`$open`);
+
         // register serial receive handler
         serial.onDataReceived(serial.delimiters(Delimiters.NewLine), () => {
             // read line
@@ -74,7 +77,7 @@ namespace remote_iot {
             // read line
             let name = bluetooth.uartReadUntil(";");
             let to = bluetooth.uartReadUntil(";");
-            let id = bluetooth.uartReadUntil(';');
+            let id = bluetooth.uartReadUntil(";");
             let text = bluetooth.uartReadUntil("\n");
 
             // check name
