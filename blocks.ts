@@ -129,7 +129,9 @@ namespace remote_iot {
         NAME = name;
 
         // update config
-        if (SERIAL || CONNECTED) {
+        if (SERIAL) {
+            serial.writeLine(`$config;${NAME}`);
+        } else if (CONNECTED) {
             bluetooth.uartWriteLine(`$config;${NAME}`);
         }
     }
