@@ -1,6 +1,6 @@
 {
     "name": "remote-iot",
-    "version": "0.2.5",
+    "version": "0.1.0",
     "description": "Remote IoT at Home",
     "license": "MIT",
     "dependencies": {
