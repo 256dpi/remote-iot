@@ -75,7 +75,7 @@ module.exports.start = async function (uri, clientID = 'Remote-IoT', logger = co
   client.subscribe('#');
 
   // handle messages
-  client.on('message', (topic, data) => {
+  client.on('message', async (topic, data) => {
     // get message
     const msg = data.toString();
 
@@ -88,14 +88,16 @@ module.exports.start = async function (uri, clientID = 'Remote-IoT', logger = co
     // relay message
     for (const device of Object.values(bleDevices)) {
       if (device.filter === topic) {
-        device.rxChar.write(buf, true);
+        for (const chunk of chunked(buf, 20)) {
+          await device.rxChar.writeAsync(chunk, false);
+        }
       }
     }
 
     // relay message
     for (const device of Object.values(spDevices)) {
       if (device.filter === topic) {
-        device.port.write(buf);
+        await device.port.write(buf);
       }
     }
   });
@@ -178,8 +180,16 @@ module.exports.start = async function (uri, clientID = 'Remote-IoT', logger = co
     device.txChar = txChar;
     device.rxChar = rxChar;
 
-    // handle messages
+    // create parser
+    const parser = new Readline({ delimiter: '\r\n' });
+
+    // stream to parser
     txChar.on('data', (data) => {
+      parser.write(data);
+    });
+
+    // handle messages
+    parser.on('data', (data) => {
       // get message
       const msg = data.toString().trim();
 
@@ -216,7 +226,7 @@ module.exports.start = async function (uri, clientID = 'Remote-IoT', logger = co
     await txChar.subscribeAsync();
 
     // write ready
-    await rxChar.writeAsync(Buffer.from('$ready;;;\n', 'utf8'), true);
+    await rxChar.writeAsync(Buffer.from('$ready;;;\n', 'utf8'), false);
 
     // log
     logger('==> Device connected: ' + name);
@@ -420,3 +430,20 @@ module.exports.stop = async function (logger = console.log) {
   // log
   logger('==> Stopped!');
 };
+
+function chunked(buf, size) {
+  // prepare list
+  let list = [];
+
+  // iterate size
+  for (let i = size; true; i += size) {
+    // add chunk and return list if smaller
+    if (buf.length < i) {
+      list.push(buf.slice(i - size, buf.length));
+      return list;
+    }
+
+    // add chunk
+    list.push(buf.slice(i - size, i));
+  }
+}

@@ -183,7 +183,10 @@ namespace remote_iot {
         if (SERIAL) {
             serial.writeLine(`${NAME};${name};${id};${text}`);
         } else if(CONNECTED) {
-            bluetooth.uartWriteLine(`${NAME};${name};${id};${text}`);
+            const buf = Buffer.fromUTF8(`${NAME};${name};${id};${text}\r\n`);
+            for (const chunk of buf.chunked(20)) {
+                bluetooth.uartWriteBuffer(chunk);
+            }
         }
     }
 
